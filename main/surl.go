@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"flag"
 	"github.com/gorilla/mux"
-	"github.com/vosst/url_shortener"
+	"github.com/vosst/surl"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 )
 
 // Configuration bundles all parameters of the app.
@@ -48,9 +47,8 @@ func main() {
 
 	ticketer := &surl.CountingTicketer{}
 	store := surl.NewInMemoryStore()
-	logger := log.New(os.Stdout, "surl ", log.LstdFlags)
 
-	service := surl.NewService(ticketer, store, logger)
+	service := surl.NewService(ticketer, store)
 	rtr := mux.NewRouter()
 
 	rtr.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

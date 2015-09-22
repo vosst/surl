@@ -2,16 +2,14 @@ package surl
 
 import (
 	"fmt"
-	"log"
 	"net/url"
 )
 
 // Service bundles together URL shortening and persistent mapping
 // of short to long URLs
 type Service struct {
-	ticketer Ticketer    // Used to create a unique id for an incoming URL
-	store    Store       // Used to store short -> long url mappings
-	logger   *log.Logger // Logger instance
+	ticketer Ticketer // Used to create a unique id for an incoming URL
+	store    Store    // Used to store short -> long url mappings
 }
 
 // ErrorGettingURL indicates issues resolving a URL for key.
@@ -38,8 +36,6 @@ func (self ErrorPuttingURL) Error() string {
 
 // Get resolves the long URL corresponding to the URL s.
 func (self Service) Get(key string) (*url.URL, error) {
-	self.logger.Printf("Get for %+v", key)
-
 	if l, err := self.store.Get(key); err != nil {
 		return nil, ErrorGettingURL{Key: key, Inner: err}
 	} else {
@@ -49,10 +45,7 @@ func (self Service) Get(key string) (*url.URL, error) {
 
 // Put shortens the URL l and persists the mapping from short url to l.
 func (self Service) Put(l *url.URL) (string, error) {
-	self.logger.Printf("Put for %+v", l)
-
 	s := self.ticketer.Next()
-	self.logger.Printf("Mapping from %v to %v", s, l)
 	if err := self.store.Put(s, l); err != nil {
 		return "", ErrorPuttingURL{Key: s, Inner: err}
 	}
@@ -60,6 +53,6 @@ func (self Service) Put(l *url.URL) (string, error) {
 	return s, nil
 }
 
-func NewService(ticketer Ticketer, store Store, logger *log.Logger) *Service {
-	return &Service{ticketer: ticketer, store: store, logger: logger}
+func NewService(ticketer Ticketer, store Store) *Service {
+	return &Service{ticketer: ticketer, store: store}
 }

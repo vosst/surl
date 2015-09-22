@@ -1,9 +1,7 @@
 package surl
 
 import (
-	"log"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +17,7 @@ func TestServiceCallsIntoTicketerAndStoreOnPut(t *testing.T) {
 	ms.On("Get", "lalelu").Return(u, nil)
 	ms.On("Put", "lalelu", u).Return(nil)
 
-	service := NewService(mt, ms, log.New(os.Stdout, "surl ", log.LstdFlags))
+	service := NewService(mt, ms)
 
 	service.Put(u)
 	v, _ := service.Get("lalelu")
