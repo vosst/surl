@@ -1,0 +1,25 @@
+{
+    "family": "surl",
+    "volumes": [
+        {
+            "name": "my-vol",
+            "host": {}
+        }
+    ],
+    "containerDefinitions": [
+        {
+            "environment": [],
+            "name": "main",
+            "image": "vosst/surl",
+            "cpu": 10,
+            "memory": 500,
+            "portMappings": [
+                {
+                    "containerPort": 9090,
+                    "hostPort": 9090
+                }
+            ],
+            "essential": true
+        }
+    ]
+}
