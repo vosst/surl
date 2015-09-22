@@ -8,8 +8,8 @@ ADD . /go/src/github.com/vosst/surl
 # Build the outyet command inside the container.
 # (You may fetch or manage dependencies here,
 # either manually or with a tool like "godep".)
-RUN go get -t github.com/vosst/surl
-RUN go install github.com/vosst/surl
+RUN go get -t github.com/vosst/surl/main
+RUN go install github.com/vosst/surl/main
 
 # Run the outyet command by default when the container starts.
 ENTRYPOINT /go/bin/main
