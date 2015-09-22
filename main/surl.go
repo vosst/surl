@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 // Configuration bundles all parameters of the app.
@@ -47,8 +48,9 @@ func main() {
 
 	ticketer := &surl.CountingTicketer{}
 	store := surl.NewInMemoryStore()
+	reporter := &surl.LoggingServiceReporter{log.New(os.Stdout, "surl ", log.LstdFlags)}
 
-	service := surl.NewService(ticketer, store)
+	service := surl.NewService(ticketer, store, reporter)
 	rtr := mux.NewRouter()
 
 	rtr.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
