@@ -48,7 +48,8 @@ func normalizeURL(url *url.URL) *url.URL {
 
 func initLogger() *log.Logger {
 	if configuration.LogToSyslog {
-		return syslog.NewLogger(syslog.LOG_INFO, log.LstdFlags)
+		l, _ := syslog.NewLogger(syslog.LOG_INFO, log.LstdFlags)
+		return l
 	} else {
 		return log.New(os.Stdout, "surl ", log.LstdFlags)
 	}
