@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/vosst/surl"
 	"log"
+	"log/syslog"
 	"net/http"
 	"net/url"
 	"os"

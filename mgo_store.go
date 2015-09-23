@@ -18,9 +18,9 @@ type MgoStore struct {
 	session *mgo.Session
 }
 
-type document struct {
-	key string
-	url *url.URL
+type Document struct {
+	Key string
+	Url *url.URL
 }
 
 func NewMgoStore(url string) (*MgoStore, error) {
@@ -42,13 +42,14 @@ func (self *MgoStore) Get(key string) (*url.URL, error) {
 		return nil, couldNotResolveCollection
 	}
 
-	result := document{}
+	result := Document{}
+
 	err := c.Find(bson.M{"key": key}).One(&result)
 	if err != nil {
 		return nil, err
 	}
 
-	return result.url, nil
+	return result.Url, nil
 }
 
 func (self *MgoStore) Put(key string, url *url.URL) error {
@@ -58,6 +59,6 @@ func (self *MgoStore) Put(key string, url *url.URL) error {
 		return couldNotResolveCollection
 	}
 
-	return c.Insert(&document{key, url})
+	return c.Insert(&Document{Key: key, Url: url})
 
 }
