@@ -13,8 +13,9 @@ import (
 
 // Configuration bundles all parameters of the app.
 type Configuration struct {
-	Host string // Host address that the service should bind to.
-	Base string // Base url for shortened URLs.
+	Host        string // Host address that the service should bind to.
+	Base        string // Base url for shortened URLs.
+	LogToSyslog bool   // Enables logging to the os's logging facilities.
 }
 
 type Result struct {
@@ -33,6 +34,7 @@ var configuration Configuration = Configuration{}
 func init() {
 	flag.StringVar(&configuration.Host, "host", ":9090", "Host address that the service binds to")
 	flag.StringVar(&configuration.Base, "base", "http://localhost:9090", "Base URL for shortened URLs")
+	flag.BoolVar(&configuration.LogToSyslog, "log-to-syslog", true, "Enables logging to the syslog if set to true")
 }
 
 func normalizeURL(url *url.URL) *url.URL {
@@ -43,12 +45,20 @@ func normalizeURL(url *url.URL) *url.URL {
 	return url
 }
 
+func initLogger() *log.Logger {
+	if configuration.LogToSyslog {
+		return syslog.NewLogger(syslog.LOG_INFO, log.LstdFlags)
+	} else {
+		return log.New(os.Stdout, "surl ", log.LstdFlags)
+	}
+}
+
 func main() {
 	flag.Parse()
 
 	ticketer := &surl.CountingTicketer{}
 	store := surl.NewInMemoryStore()
-	reporter := &surl.LoggingServiceReporter{log.New(os.Stdout, "surl ", log.LstdFlags)}
+	reporter := &surl.LoggingServiceReporter{initLogger()}
 
 	service := surl.NewService(ticketer, store, reporter)
 	rtr := mux.NewRouter()
