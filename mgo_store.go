@@ -8,12 +8,15 @@ import (
 )
 
 const (
-	db         = "surl"
 	collection = "urls"
+	db         = "surl"
 )
 
-var couldNotResolveCollection = errors.New("Could not resolve collection in Mongo DB")
+// Indicates that there was an issue resolving the required collection
+// from the connected MongoDB instance.
+var ErrCouldNotResolveCollection = errors.New("Could not resolve collection")
 
+// MgoStore relies on MongoDB to persist key to URL mappings.
 type MgoStore struct {
 	session *mgo.Session
 }
@@ -39,7 +42,7 @@ func (self *MgoStore) Get(key string) (*url.URL, error) {
 	c := self.findCollection()
 
 	if c == nil {
-		return nil, couldNotResolveCollection
+		return nil, ErrCouldNotResolveCollection
 	}
 
 	result := Document{}
@@ -56,7 +59,7 @@ func (self *MgoStore) Put(key string, url *url.URL) error {
 	c := self.findCollection()
 
 	if c == nil {
-		return couldNotResolveCollection
+		return ErrCouldNotResolveCollection
 	}
 
 	return c.Insert(&Document{Key: key, Url: url})
