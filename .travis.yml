@@ -2,3 +2,7 @@ language: go
 script: go test
 notifications:
           email: false
+services:
+          - mongodb
+env:
+          - MGO_STORE_TEST_INSTANCE=localhost:27017         
