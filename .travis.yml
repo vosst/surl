@@ -1,5 +1,5 @@
 language: go
-script: go test
+script: go test -v
 notifications:
           email: false
 services:
