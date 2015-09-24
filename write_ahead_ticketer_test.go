@@ -1,42 +1,30 @@
 package surl
 
 import (
-	"encoding/binary"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-const testFn = "/tmp/test"
+const tmpTest = "/tmp/test"
 
-func TestCreationForValidFileSucceeds(t *testing.T) {
-	os.Remove(testFn)
+func TestNewReadsInitialValueFromCounterReaderWriter(t *testing.T) {
+	mc := &MockCounterReaderWriter{}
+	mc.On("Read", uint64(0)).Return(uint64(0), nil)
 
-	ticketer, err := NewWriteAheadTicketer(testFn)
+	_, err := NewWriteAheadTicketer(mc)
 	assert.Nil(t, err)
-	assert.NotNil(t, ticketer)
+
+	mc.AssertExpectations(t)
 }
 
-func TestNewlyCreateTicketerReturnsOneAsFirstValue(t *testing.T) {
-	os.Remove(testFn)
+func TestNextWritesValue(t *testing.T) {
+	mc := &MockCounterReaderWriter{}
+	mc.On("Read", uint64(0)).Return(uint64(0), nil)
+	mc.On("Write", uint64(1)).Return(nil)
 
-	ticketer, _ := NewWriteAheadTicketer(testFn)
-	assert.Equal(t, "1", ticketer.Next(), "Key mismatch")
-}
+	ticketer, _ := NewWriteAheadTicketer(mc)
 
-func TestTicketerPersistsCounterValue(t *testing.T) {
-	os.Remove(testFn)
-
-	ticketer, _ := NewWriteAheadTicketer(testFn)
-	ticketer.Next()
-
-	counter := uint64(0)
-	f, ferr := os.Open(testFn)
-
-	assert.Nil(t, ferr)
-	assert.NotNil(t, f)
-
-	binary.Read(f, binary.LittleEndian, &counter)
-	assert.Equal(t, uint64(1), counter, "Counter value mismatch")
+	assert.Equal(t, "1", ticketer.Next(), "Ticket mismatch")
+	mc.AssertExpectations(t)
 }
