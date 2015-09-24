@@ -9,12 +9,13 @@ import (
 // FileCounterReaderWriter implements CounterReaderWriter, relying on ordinary
 // files as the persistence backend.
 type FileCounterReaderWriter struct {
-	fn string
+	Fn string
 }
 
 func (self *FileCounterReaderWriter) Read(defaultValue uint64) (uint64, error) {
 	value := defaultValue
-	if f, err := os.Open(self.fn); err == nil {
+	if f, err := os.Open(self.Fn); err == nil {
+		defer f.Close()
 		if err = binary.Read(f, binary.LittleEndian, &value); err != nil {
 			// There is a previous value that we have issues reading.
 			// With that, we would risk consistency and instead bail out
@@ -41,7 +42,7 @@ func (self *FileCounterReaderWriter) Write(counter uint64) error {
 		return err
 	}
 
-	if err = os.Rename(tempFileName, self.fn); err != nil {
+	if err = os.Rename(tempFileName, self.Fn); err != nil {
 		return err
 	}
 
