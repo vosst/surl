@@ -13,7 +13,7 @@ const testFn = "/tmp/test"
 func TestCreationForValidFileSucceeds(t *testing.T) {
 	os.Remove(testFn)
 
-	ticketer, err := NewWriteAheadTicketer(testFn)
+	ticketer, err := NewWriteAheadTicketer(&FileCounterReaderWriter{testFn})
 	assert.Nil(t, err)
 	assert.NotNil(t, ticketer)
 }
@@ -21,14 +21,14 @@ func TestCreationForValidFileSucceeds(t *testing.T) {
 func TestNewlyCreateTicketerReturnsOneAsFirstValue(t *testing.T) {
 	os.Remove(testFn)
 
-	ticketer, _ := NewWriteAheadTicketer(testFn)
+	ticketer, _ := NewWriteAheadTicketer(&FileCounterReaderWriter{testFn})
 	assert.Equal(t, "1", ticketer.Next(), "Key mismatch")
 }
 
 func TestTicketerPersistsCounterValue(t *testing.T) {
 	os.Remove(testFn)
 
-	ticketer, _ := NewWriteAheadTicketer(testFn)
+	ticketer, _ := NewWriteAheadTicketer(&FileCounterReaderWriter{testFn})
 	ticketer.Next()
 
 	counter := uint64(0)
